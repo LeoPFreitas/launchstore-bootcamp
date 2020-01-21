@@ -1,7 +1,9 @@
+const { formatPrice } = require('../../lib/utils')
+
 const Category = require('../models/Category')
 const Product = require('../models/Product')
+const File = require('../models/File')
 
-const { formatPrice } = require('../../lib/utils')
 
 module.exports = {
   create(req, res) {
@@ -19,7 +21,6 @@ module.exports = {
   },
   // Melhor forma de trabalhar --> async await
   async post(req, res) {
-    // salvar categorias
     const keys = Object.keys(req.body)
 
     for (key of keys) {
@@ -28,10 +29,17 @@ module.exports = {
       }
     }
 
+    if (req.files.length == 0)
+      return res.send('Please, send at least one image')
+
+
     let results = await Product.create(req.body)
     const productId = results.rows[0].id
 
-    return res.redirect(`/products/${productId}`)
+    const filesPromise = req.files.map(file => File.create({ ...file, product_id: productId }))
+    await Promise.all(filesPromise)
+
+    return res.redirect(`/products/${productId}/edit`)
 
   },
   async edit(req, res) {
@@ -46,25 +54,51 @@ module.exports = {
     product.price = formatPrice(product.price)
     product.old_price = formatPrice(product.old_price)
 
+    //get categories
     results = await Category.all()
     const categories = results.rows
 
-    return res.render("products/edit.njk", { product, categories })
+    //get images
+    results = await Product.files(product.id)
+    let files = results.rows
+    files = files.map(file => ({
+      ...file,
+      src: `${req.protocol}://${req.headers.host}${file.path.replace("public", "")}`
+    }))
+
+    return res.render("products/edit.njk", { product, categories, files })
 
   },
   async put(req, res) {
     const keys = Object.keys(req.body)
 
     for (key of keys) {
-      if (req.body[key] == "") {
+      if (req.body[key] == "" && key != "removed_files") {
         return res.send('Please, fill all fields!')
       }
     }
 
-    req.body.price = req.body.price.replace(/\D/g,"")
-    
+    if (req.files.length != 0) {
+      const newFilesPromise = req.files.map(file => 
+        File.create({ ...file, product_id: req.body.id }))
+
+      await Promise.all(newFilesPromise)
+    }
+
+    if (req.body.removed_files) {
+      const removedFiles = req.body.removed_files.split(",")  //[1,2,3,]
+      lastIndex = removedFiles.length - 1
+      removedFiles.splice(lastIndex, 1) //[1,2,3]
+
+      const removedFilesPromise = removedFiles.map(id => File.delete(id))
+
+      await Promise.all(removedFilesPromise)
+    }
+
+    req.body.price = req.body.price.replace(/\D/g, "")
+
     // Atualizar o old_price
-    if (req.body.old_price != req.body.price ){
+    if (req.body.old_price != req.body.price) {
       const oldProduct = await Product.find(req.body.id)
       req.body.old_price = oldProduct.rows[0].price
     }
@@ -74,7 +108,7 @@ module.exports = {
     return res.redirect(`/products/${req.body.id}/edit`)
 
   },
-  async delete(req, res){
+  async delete(req, res) {
     await Product.delete(req.body.id)
 
     return res.redirect('/products/create')

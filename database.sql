@@ -24,8 +24,6 @@ CREATE TABLE "files" (
   "product_id" int
 );
 
--- na tabela produtos existe uma chave estrangeira da categoria id, 
--- e essa chave estrangeira na categoria id está referenciando a tabela de categorias no campo categoria id
 ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
 ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
