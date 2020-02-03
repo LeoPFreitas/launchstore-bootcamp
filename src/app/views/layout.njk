@@ -6,16 +6,16 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <meta name="author" content="Leonardo Freitas">
 
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="/style.css">
+        {% include "parts/styles.njk" %}
 
         {% block head %}
             <title>Launch Store</title>
         {% endblock %}
 
-
     </head>
     <body>
+
+        {% include "parts/messages.njk" %}
         
         {% include "parts/header.njk" %}
 
