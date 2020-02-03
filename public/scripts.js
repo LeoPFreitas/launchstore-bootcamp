@@ -1,162 +1,192 @@
 const Mask = {
   apply(input, func) {
-    setTimeout(function () {
-      input.value = Mask[func](input.value)
+    setTimeout(function() {
+      input.value = Mask[func](input.value);
     }, 1);
   },
   formatBRL(value) {
-    value = value.replace(/\D/g, "")
+    value = value.replace(/\D/g, "");
 
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(value / 100);
+  },
+  cpfCnpj(value) {
+    value = value.replace(/\D/g, "");
 
-    }).format(value / 100)
+    if (value.length > 14)
+      value = value.slice(0, -1)
+
+    // check if is cfp
+    if (value.length > 11) {
+      //cnpj 11.222.333/0001-11 --> 14 digitos
+      value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+    } else {
+      //cpf 470.654.449-33
+      value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+    }
+
+    return value
+  },
+  cep(value){
+
+    value = value.replace(/\D/g, "");
+
+    if (value.length > 8)
+      value = value.slice(0, -1)
+
+    value = value.replace(/(\d{5})(\d)/, "$1-$2")
+
+
+    return value
+
   }
-}
+};
 
 const PhotosUpload = {
   input: "",
-  preview: document.querySelector('#photos-preview'),
+  preview: document.querySelector("#photos-preview"),
   uploadLimit: 6,
   files: [],
   handleFileInput(event) {
     // extrai e chama de fileList
-    const { files: fileList } = event.target
-    PhotosUpload.input = event.target
+    const { files: fileList } = event.target;
+    PhotosUpload.input = event.target;
 
-    if (PhotosUpload.hasLimit(event)) return
+    if (PhotosUpload.hasLimit(event)) return;
 
     Array.from(fileList).forEach(file => {
-
       // para resolver o proble de remover no front e manter no back
-      PhotosUpload.files.push(file)
+      PhotosUpload.files.push(file);
 
-      const reader = new FileReader()
+      const reader = new FileReader();
 
       reader.onload = () => {
-        const image = new Image()
-        image.src = String(reader.result)
+        const image = new Image();
+        image.src = String(reader.result);
 
-        const div = PhotosUpload.getContainer(image)
-        PhotosUpload.preview.appendChild(div)
-      }
+        const div = PhotosUpload.getContainer(image);
+        PhotosUpload.preview.appendChild(div);
+      };
 
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(file);
+    });
 
-    })
-
-    PhotosUpload.input.files = PhotosUpload.getAllFiles()
+    PhotosUpload.input.files = PhotosUpload.getAllFiles();
   },
   getContainer(image) {
-    const div = document.createElement('div')
-    div.classList.add('photo')
+    const div = document.createElement("div");
+    div.classList.add("photo");
 
-    div.onclick = PhotosUpload.removePhoto
+    div.onclick = PhotosUpload.removePhoto;
 
-    div.appendChild(image)
+    div.appendChild(image);
 
-    div.appendChild(PhotosUpload.getRemoveButton())
+    div.appendChild(PhotosUpload.getRemoveButton());
 
-    return div
-
+    return div;
   },
   hasLimit(event) {
-    const { uploadLimit, input, preview } = PhotosUpload
-    const { files: fileList } = input
+    const { uploadLimit, input, preview } = PhotosUpload;
+    const { files: fileList } = input;
     if (fileList.length > uploadLimit) {
-      alert(`Envie no máximo ${uploadLimit} fotos.`)
-      event.preventDefault()
-      return true
+      alert(`Envie no máximo ${uploadLimit} fotos.`);
+      event.preventDefault();
+      return true;
     }
 
-    const photosDivs = []
+    const photosDivs = [];
     preview.childNodes.forEach(item => {
       if (item.classList && item.classList.value == "photo")
-        photosDivs.push(item)
-    })
+        photosDivs.push(item);
+    });
 
     // para caso de somar mais de 6 fotos
-    const totalPhotos = fileList.length + photosDivs.length
+    const totalPhotos = fileList.length + photosDivs.length;
     if (totalPhotos > uploadLimit) {
-      alert("Você atingio o limite máximo de fotos")
-      event.preventDefault()
-      return true
+      alert("Você atingio o limite máximo de fotos");
+      event.preventDefault();
+      return true;
     }
 
-    return false
+    return false;
   },
   getAllFiles() {
     // primeiro pro firefox, depois pro chrome
-    const dataTransfer = new ClipboardEvent("").clipboardData || new DataTransfer()
+    const dataTransfer =
+      new ClipboardEvent("").clipboardData || new DataTransfer();
 
-    PhotosUpload.files.forEach(file => dataTransfer.items.add(file))
+    PhotosUpload.files.forEach(file => dataTransfer.items.add(file));
 
-    console.log(dataTransfer)
+    console.log(dataTransfer);
 
-    return dataTransfer.files
-
+    return dataTransfer.files;
   },
   getRemoveButton() {
-    const button = document.createElement('i')
-    button.classList.add('material-icons')
-    button.innerHTML = "close"
-    return button
+    const button = document.createElement("i");
+    button.classList.add("material-icons");
+    button.innerHTML = "close";
+    return button;
   },
   removePhoto(event) {
-    const photoDiv = event.target.parentNode // div class photos
-    const photosArray = Array.from(PhotosUpload.preview.children)
-    const index = photosArray.indexOf(photoDiv)
+    const photoDiv = event.target.parentNode; // div class photos
+    const photosArray = Array.from(PhotosUpload.preview.children);
+    const index = photosArray.indexOf(photoDiv);
 
     // para tirar uma posição x de um array
-    PhotosUpload.files.splice(index, 1)
-    PhotosUpload.input.files = PhotosUpload.getAllFiles()
+    PhotosUpload.files.splice(index, 1);
+    PhotosUpload.input.files = PhotosUpload.getAllFiles();
 
-    photoDiv.remove()
+    photoDiv.remove();
   },
   removeOldPhoto(event) {
-    const photoDiv = event.target.parentNode
+    const photoDiv = event.target.parentNode;
 
     if (photoDiv.id) {
-      const removedFiles = document.querySelector('input[name="removed_files"]')
+      const removedFiles = document.querySelector(
+        'input[name="removed_files"]'
+      );
       if (removedFiles) {
-        removedFiles.value += `${photoDiv.id},`
+        removedFiles.value += `${photoDiv.id},`;
       }
     }
-    photoDiv.remove()
+    photoDiv.remove();
   }
-}
+};
 
 const ImageGallery = {
-  highlight: document.querySelector('.gallery .highlight > img'),
-  previews: document.querySelectorAll('.gallery-preview img'),
+  highlight: document.querySelector(".gallery .highlight > img"),
+  previews: document.querySelectorAll(".gallery-preview img"),
   setImage(e) {
-    const { target } = e
+    const { target } = e;
 
-    ImageGallery.previews.forEach(preview => preview.classList.remove('active'))
-    target.classList.add('active')
+    ImageGallery.previews.forEach(preview =>
+      preview.classList.remove("active")
+    );
+    target.classList.add("active");
 
-    ImageGallery.highlight.src = target.src
-    Lightbox.image.src = target.src
+    ImageGallery.highlight.src = target.src;
+    Lightbox.image.src = target.src;
   }
-}
+};
 
 const Lightbox = {
-  target: document.querySelector('.lightbox-target'),
-  image: document.querySelector('.lightbox-target img'),
-  closeButton: document.querySelector('.lightbox-target a.lightbox-close'),
+  target: document.querySelector(".lightbox-target"),
+  image: document.querySelector(".lightbox-target img"),
+  closeButton: document.querySelector(".lightbox-target a.lightbox-close"),
   open() {
-    Lightbox.target.style.opacity = 1
-    Lightbox.target.style.top = 0
-    Lightbox.target.style.bottom = 0
-    Lightbox.closeButton.style.top = "5%"
-    Lightbox.closeButton.style.right = '5%'
+    Lightbox.target.style.opacity = 1;
+    Lightbox.target.style.top = 0;
+    Lightbox.target.style.bottom = 0;
+    Lightbox.closeButton.style.top = "5%";
+    Lightbox.closeButton.style.right = "5%";
   },
   close() {
-    Lightbox.target.style.opacity = 0
-    Lightbox.target.style.top = '-100%'
-    Lightbox.target.style.bottom = 'initial'
-    Lightbox.closeButton.style.top = '-10%'
-    Lightbox.closeButton.style.right = '-10%'
-   }
-}
+    Lightbox.target.style.opacity = 0;
+    Lightbox.target.style.top = "-100%";
+    Lightbox.target.style.bottom = "initial";
+    Lightbox.closeButton.style.top = "-10%";
+    Lightbox.closeButton.style.right = "-10%";
+  }
+};

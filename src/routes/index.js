@@ -4,7 +4,7 @@ const routes = express.Router()
 const HomeController = require('../app/controllers/HomeController')
 
 // import routes
-const users = require('./users')
+const users = require('./users') 
 const products = require('./products')
 
 
@@ -16,6 +16,10 @@ routes.use('/users', users)
 // ALIAS
 routes.get('/ads/create', function(req, res){
     return res.redirect("/products/create")
+})
+
+routes.get('/accounts', function(req, res){
+    return res.redirect("/users/register")
 })
 
 module.exports = routes
