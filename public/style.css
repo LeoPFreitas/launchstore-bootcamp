@@ -588,3 +588,14 @@ form .item #photos-preview img {
 .form input[name='cep']{
     max-width: 60%;
 }
+
+/* VALIDATE ERROR */
+.input .error {
+    background-color: #e74c3c;
+    padding: 4px;
+    border-radius: 4px;
+    color: white;
+
+    margin-top: 8px;
+    max-width: 60%;
+}
