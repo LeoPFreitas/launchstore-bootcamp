@@ -1,0 +1,24 @@
+<div class="item">
+    <div class="">Email</div>
+    <div class="input">
+      <input 
+        type="email" 
+        name="email" 
+        placeholder="Digite seu email"
+        value="{{user.email}}"
+        {# Quando ele sair do campo --> onblur #}
+        onblur="Validate.apply(this, 'isEmail')"
+        >
+    </div>
+</div>
+
+<div class="item">
+    <div class="">Senha</div>
+    <div class="input">
+      <input 
+        type="password" 
+        name="password" 
+          placeholder="Digite sua senha."
+      >
+    </div>
+</div>
