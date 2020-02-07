@@ -9,6 +9,12 @@ const server = express()
 // usa a session
 server.use(session)
 
+// habilita o session em todo o template engine
+server.use((req, res, next) => {
+    res.locals.session = req.session
+    next()
+})
+
 //Faz funcionar o req.body
 server.use(express.urlencoded({ extended: true }))
 
