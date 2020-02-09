@@ -1,7 +1,8 @@
-const crypto = require("crypto");
-const { hash } = require("bcryptjs");
-const mailer = require("../../lib/mailer");
 const User = require("../models/User");
+
+const { hash } = require("bcryptjs");
+const crypto = require("crypto");
+const mailer = require("../../lib/mailer");
 
 module.exports = {
   loginForm(req, res) {
@@ -20,14 +21,13 @@ module.exports = {
     return res.render("session/forgot-password");
   },
   async forgot(req, res) {
-    // recebe user do validator
     const user = req.user;
 
     try {
-      // token para usuário
+      // um token para esse usuário
       const token = crypto.randomBytes(20).toString("hex");
 
-      // criar tempo de expirar token
+      // criar um expiração
       let now = new Date();
       now = now.setHours(now.getHours() + 1);
 
@@ -36,23 +36,24 @@ module.exports = {
         reset_token_expires: now
       });
 
-      // enviar um e-mail com link de recuperação de senha
+      // enviar um email com um link de recuperação de senha
       await mailer.sendMail({
         to: user.email,
-        from: "no-reply@launchstore.com",
-        subject: "recuperação de senha",
-        html: `
-          <h2>Perdeu a chave?</h2>
-          <p>Não se preocupe, clique no link a baixo e recupere sua senha</p>
-          <p>
-            <a href="http://localhost:3000/users/password-reset?token=${token}" target="_blank">Recuperar senha.</a>
-          </p>  
-        `
+        from: "no-reply@launchstore.com.br",
+        subject: "Recuperação de senha",
+        html: `<h2>Perdeu a chave?</h2>
+            <p>Não se preocupe, clique no link abaixo para recuperar sua senha</p>
+            <p>
+                <a href="http://localhost:3000/users/password-reset?token=${token}" target="_blank">
+                    RECUPERAR SENHA
+                </a>
+            </p>
+            `
       });
 
-      // avisar o usuário que o email foi enviado
+      // avisar o usuário que enviamos o email
       return res.render("session/forgot-password", {
-        success: "verifique seu e-mail para resetar sua senha."
+        success: "Verifique seu email para resetar sua senha!"
       });
     } catch (err) {
       console.error(err);
@@ -66,10 +67,11 @@ module.exports = {
   },
   async reset(req, res) {
     const user = req.user;
+
     const { password, token } = req.body;
 
     try {
-      // cria novo hash de senha
+      // cria um novo hash de senha
       const newPassword = await hash(password, 8);
 
       // atualiza o usuário
@@ -82,10 +84,10 @@ module.exports = {
       // avisa o usuário que ele tem uma nova senha
       return res.render("session/login", {
         user: req.body,
-        success: "Senha atualizada! Faça o seu login."
+        success: "Senha atualizada! Faça o seu login"
       });
-    } catch (error) {
-      console.lototg(error);
+    } catch (err) {
+      console.error(err);
       return res.render("session/password-reset", {
         user: req.body,
         token,
