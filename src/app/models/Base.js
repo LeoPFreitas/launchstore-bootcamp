@@ -5,9 +5,14 @@ function find(filters, table) {
 
   if (filters) {
     Object.keys(filters).map(key => {
-      query += ` ${field} = '${filters[key][field]}'`;
+      query += ` ${key}`;
+
+      Object.keys(filters[key]).map(field => {
+        query += ` ${field} = '${filters[key][field]}'`;
+      });
     });
   }
+
   return db.query(query);
 }
 
@@ -30,7 +35,7 @@ const Base = {
     return results.rows[0];
   },
   async findAll(filters) {
-    const results = await fin(filters, this.table);
+    const results = await find(filters, this.table);
     return results.rows;
   },
   async create(fields) {
