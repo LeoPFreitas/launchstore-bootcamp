@@ -4,44 +4,39 @@
   grid-template-columns: 1fr 1fr;
   grid-gap: 24px;
 }
-
-/* GALLERY */
-/*  PRODUCT GALLERY  */
-.product-single .gallery{
+/* product single gallery */
+.product-single .gallery {
   width: 100%;
 }
-
-/* .product-single .gallery img {
-  width: 100%;
-} */
 
 .product-single .highlight > img {
   width: 100%;
   height: 280px;
-  
+
   object-fit: none;
   object-position: 50% 50%;
   border: 1px solid #efefef;
-  
+
   cursor: zoom-in;
 }
 
 .product-single .gallery-preview {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 2px;
+  grid-gap: 2px
 }
 
 .product-single .gallery-preview img {
   height: 100px;
   width: 100%;
-  
-  object-fit: cover;
-  opacity: 0.6;
-  
-  cursor: pointer;
-  transition: 200ms;
 
+  object-fit:cover;
+
+  opacity: 0.6;
+
+  cursor: pointer;
+
+  transition: 200ms;
 }
 
 .product-single .gallery-preview img:hover,
@@ -49,26 +44,26 @@
   opacity: 1;
 }
 
-/* LIGHBOX PRODUCT GALLERY */
+/* lightbox product gallery */
 .product-single .highlight .lightbox-target {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba( 0,0,0, .7);
 
   overflow: hidden;
   z-index: 100;
 
   top: -100%;
   left: 0;
-
   opacity: 0;
+
   transition: opacity 400ms;
 }
 
 .product-single .highlight .lightbox-target img {
   margin: auto;
-  
+
   position: absolute;
   top: 0;
   left: 0;
@@ -76,7 +71,7 @@
   right: 0;
 
   background-color: white;
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 8px rgba(0,0,0,.3);
 
   width: 90%;
   height: 90%;
@@ -85,8 +80,8 @@
 }
 
 .product-single .highlight a.lightbox-close {
-  width: 50px;
-  height: 50px;
+  width:50px;
+  height:50px;
 
   position: absolute;
   right: -10%;
@@ -100,7 +95,7 @@
   background: transparent;
 }
 
-/* PRODUCT SINGLE INFO */
+/* product single info */
 .product-single .info {
   display: grid;
   grid-template-rows: auto 40px 2fr 1fr;
@@ -120,7 +115,7 @@
   letter-spacing: 0.4px;
 }
 
-/* PRICE-BY */
+/* price-buy */
 .product-single .price-buy {
   display: flex;
   align-items: center;
@@ -141,17 +136,31 @@
   align-items: center;
 }
 
-.product-single .price-buy .old-price {
+.product-single .price-buy .price .old {
   text-decoration: line-through;
   color: #999;
   font-size: 14px;
   font-weight: normal;
-  margin-left: 8px;
+  margin-left:8px;
 }
 
 .product-single .price-buy .buy button {
   background-color: var(--secondary-color);
 
   font-size: 14px;
-  letter-spacing: 0.4px;
+  letter-spacing: .4px;
+}
+
+.product-create {
+  max-width: 700px
+}
+
+.product-single .unavaliable{
+  font-size: 14px;
+  color: #ccc;
+  font-weight: bold;
+
+  background: #eee;
+
+  padding: 8px 16px;
 }
