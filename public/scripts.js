@@ -192,70 +192,85 @@ const Lightbox = {
 const Validate = {
   apply(input, func) {
     //  limpar os campos de error
-    Validate.clearErros(input)
+    Validate.clearErros(input);
 
     let results = Validate[func](input.value);
-    input.value = results.value
+    input.value = results.value;
 
-    if (results.error){
-      Validate.displayError(input, results.error)
+    if (results.error) {
+      Validate.displayError(input, results.error);
     }
   },
-  displayError(input, error){
-    const div = document.createElement('div')
-    div.classList.add('error')
-    div.innerHTML = error
-    input.parentNode.appendChild(div)
-    input.focus()
+  displayError(input, error) {
+    const div = document.createElement("div");
+    div.classList.add("error");
+    div.innerHTML = error;
+    input.parentNode.appendChild(div);
+    input.focus();
   },
-  clearErros(input){
-    const errorDiv = input.parentNode.querySelector('.error')
-    if (errorDiv)
-      errorDiv.remove()
+  clearErros(input) {
+    const errorDiv = input.parentNode.querySelector(".error");
+    if (errorDiv) errorDiv.remove();
   },
-  isEmail(value){
-    let error = null
-    // abcd - 
-    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+  isEmail(value) {
+    let error = null;
+    // abcd -
+    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-    if (!value.match(mailFormat))
-      error = "Email inválido"
+    if (!value.match(mailFormat)) error = "Email inválido";
 
     return {
       error,
       value
-    }
+    };
   },
-  isCpfCnpj(value){
-    let error = null
+  isCpfCnpj(value) {
+    let error = null;
 
-    const cleanValues = value.replace(/\D/g, "")
+    const cleanValues = value.replace(/\D/g, "");
 
     if (cleanValues.length < 12 && cleanValues.length !== 11) {
-      error = "CPF inválido"
-    }
-
-    else if (cleanValues.length > 12 && cleanValues.length !== 14){
-      error = "CNPJ incorreto"
+      error = "CPF inválido";
+    } else if (cleanValues.length > 12 && cleanValues.length !== 14) {
+      error = "CNPJ incorreto";
     }
 
     return {
       error,
       value
-    }
+    };
   },
-  isCep(value){
-    let error = null
+  isCep(value) {
+    let error = null;
 
-    const cleanValues = value.replace(/\D/g, "")
+    const cleanValues = value.replace(/\D/g, "");
 
     if (cleanValues.length !== 8) {
-      error = "CEP inválido"
+      error = "CEP inválido";
     }
-    
+
     return {
       error,
       value
+    };
+  },
+  allFields(e) {
+    const items = document.querySelectorAll(
+      ".item input, .item select, .item trextarea"
+    );
+
+    for (item of items) {
+      if (item.value == "") {
+        const message = document.createElement("div");
+        message.classList.add("messages");
+        message.classList.add("error");
+        message.style.position = "fixed";
+        message.innerHTML = "Todos os campos são obrigatórios";
+
+        document.querySelector("body").append(message);
+
+        e.preventDefault();
+      }
     }
   }
 };
