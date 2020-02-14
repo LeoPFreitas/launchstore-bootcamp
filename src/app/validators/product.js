@@ -21,9 +21,10 @@ async function put(req, res, next) {
       return res.send("Please, fill all fields!");
     }
   }
-  next()
+  next();
 }
 
 module.exports = {
-  post
+  post,
+  put
 };
