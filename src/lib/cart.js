@@ -18,7 +18,7 @@ const Cart = {
   },
   addOne(product) {
     // ver se o produto existe no carrinho
-    let inCart = this.items.find(item => item.product.id == product.id);
+    let inCart = this.getCartItem(product.id);
 
     //se não existir, adicionar
     if (!inCart) {
@@ -52,7 +52,7 @@ const Cart = {
   },
   removeOne(productId) {
     // pegar item do carrinho
-    const inCart = this.items.find(item => item.product.id == productId);
+    const inCart = this.getCartItem(productId);
 
     // se não tiver retorna
     if (!inCart) return this;
@@ -77,7 +77,28 @@ const Cart = {
 
     return this;
   },
-  delete(productId) {}
+  delete(productId) {
+    const inCart = this.getCartItem(productId);
+
+    if (!inCart) return this;
+
+    // verificar se existe item realmente no carrinho
+    if (this.items.length > 0) {
+      this.total.quantity -= inCart.quantity;
+      this.total.price -= inCart.product.price * inCart.quantity;
+      this.total.formattedPrice = formatPrice(this.total.price);
+    }
+
+    // remover item da lista
+    // o fitler vai pegar todos os que forem diferente do product.id
+    this.items = this.items.filter(
+      item => inCart.product.id != item.product.id
+    );
+    return this;
+  },
+  getCartItem(productId) {
+    return this.items.find(item => item.product.id == productId);
+  }
 };
 
 module.exports = Cart;
