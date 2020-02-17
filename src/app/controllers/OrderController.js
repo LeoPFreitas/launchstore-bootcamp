@@ -1,9 +1,11 @@
 const LoadProductService = require("../services/LoadProductService");
+const LoadOrderService = require("../services/LoadOrderService");
 const User = require("../models/User");
 const Order = require("../models/Order");
 
 const Cart = require("../../lib/cart");
 const mailer = require("../../lib/mailer");
+const { formatPrice, date } = require("../../lib/utils");
 
 const email = (seller, product, buyer) => `
   <h2>Olá ${seller.name}</h2>
@@ -23,6 +25,22 @@ const email = (seller, product, buyer) => `
 `;
 
 module.exports = {
+  async index(req, res) {
+    // pegar pedido dos usuário
+    const orders = await LoadOrderService.load("orders", {
+      where: { buyer_id: req.session.userId }
+    });
+
+    return res.render("orders/index", { orders });
+  },
+  async sales(req, res) {
+    // pegar pedido dos usuário
+    const sales = await LoadOrderService.load("orders", {
+      where: { seller_id: req.session.userId }
+    });
+
+    return res.render("orders/sales", { sales });
+  },
   async post(req, res) {
     try {
       // pegar os produtos do carrinho
@@ -30,7 +48,7 @@ module.exports = {
 
       // usuario logado diferente do dono do produto
       const buyer_id = req.session.userId;
-      
+
       const filteredItems = cart.items.filter(
         item => item.product.user_id != buyer_id
       );
@@ -75,6 +93,10 @@ module.exports = {
       });
 
       await Promise.all(createOrdersPromisse);
+
+      // limpar o carrinho
+      delete req.session.cart;
+      Cart.init();
 
       //notificar o usuario com algum mensagem de sucesso
       return res.render("orders/success");
