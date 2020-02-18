@@ -135,16 +135,18 @@ nav.primary ul {
     justify-content: space-between;
 }
 
-nav.primary ul li a {
+nav.primary > ul > li > a {
     display: flex;
     align-items: center;
+
+    height: 48px;
     
     color: white;
 
     transition: 200ms;
 }
 
-nav.primary ul li a:hover{
+nav.primary > ul > li > a:hover{
     color: var(--primary-color);
 }
 
